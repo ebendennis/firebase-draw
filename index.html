@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8 />
+<title>Leaflet Draw</title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+<script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.4/mapbox.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.4/mapbox.css' rel='stylesheet' />
+<link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="css/jPushMenu.css" />
+<link rel="stylesheet" type="text/css" href="css/main.css" />
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+
+<style>
+</style>
+</head>
+<body>
+    <script src='https://cdn.firebase.com/js/client/1.1.1/firebase.js'></script>
+  <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.css' rel='stylesheet' />
+<link href='css/leaflet.draw.css' rel='stylesheet' />
+<script src='ext/leaflet.draw.js'></script>
+<script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.24.0/L.Control.Locate.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.24.0/L.Control.Locate.css' rel='stylesheet' />
+
+<nav id="myNavmenu" class="cbp-spmenu cbp-spmenu-vertical cbp-spmenu-left">
+
+    <div class="hidden-md hidden-lg xs-legend col-sm-12">
+      <b>Instructions:</b>
+        <p><small>Image upload still broken in Firefox, so use another browser.</small></p>
+        <p><small>Why not write some instructions for this thing?</small></p>
+        <p><small>I'm sure you can come up with something.</small></p>
+
+      <b>Legend:</b>
+        <ul class='legend clearfix'>Legend Goes Here
+          <li><span style='background:#385777;'></span> Box</li>
+          <li><svg width="51" height="20">
+                <circle cx="11" cy="11" r="8" stroke="green" stroke-width="1" fill="yellow" />
+              </svg>Circle</li>
+          <li><img src="http://a.tiles.mapbox.com/v3/marker/pin-s+ac0000.png"></span>Marker</li>
+          <li class="alt"><span style='background:darkslategrey;'></span> Project Limits</li>
+        </ul>
+        <small>Source: <a href="http://www.iconeng.com">ICON Engineering; </a><a href='https://www.mapbox.com/about/maps/' target='_blank'>Maps &copy; Mapbox &copy; OpenStreetMap</a></small>
+    </div>
+    <h3>Layers</h3>
+</nav>
+<div id='main'>
+<div class="container-fluid">
+  <nav class="navbar navbar-default navbar-top">
+    <button type="button" class="toggle-menu menu-left push-body toggle-button">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <div class="hidden-xs"><h3>Remote Data Collection</h3></div>
+    <div class="visible-xs small-header"><h6>Remote Data Collection</h6></div>
+  </nav>
+
+<div id='map'>
+  <iframe type="hidden" name="hideframe" style="display:none;"></iframe>
+  <div class="visible-md visible-lg">
+  <div class="bs-docs-section col-md-3 instructions">
+     <div class="panel panel-primary">
+        <div class="panel-leftheading">
+            <h3 class="panel-lefttitle">Instructions</h3>
+        </div>
+        <div class="panel-rightbody">
+          <p><small>Image upload still broken in Firefox, so use another browser.</small></p>
+          <p><small>Why not write some instructions for this thing?</small></p>
+          <p><small>I'm sure you can come up with something.</small></p>
+        </div><div class="clearfix">
+          </div>
+      </div>
+  </div>
+  <div class="bs-docs-section col-md-3 legend-main">
+     <div class="panel panel-primary  legend-box">
+        <div class="panel-leftheading">
+            <h3 class="panel-lefttitle">Legend</h3>
+        </div>
+        <div class="panel-rightbody">
+            <ul class='legend clearfix'>Effective Flood Hazards
+              <li><span style='background:#385777;'></span> Box</li>
+              <li><svg width="51" height="20">
+                    <circle cx="11" cy="11" r="8" stroke="green" stroke-width="1" fill="yellow" />
+                  </svg>Circle</li>
+              <li><img src="http://a.tiles.mapbox.com/v3/marker/pin-s+ac0000.png"></span>Marker</li>
+              <li class="alt"><span style='background:darkslategrey;'></span> Project Limits</li>
+            </ul>
+              <small>Source: <a href="http://www.iconeng.com">ICON Engineering; </a><a href='https://www.mapbox.com/about/maps/' target='_blank'>Maps &copy; Mapbox &copy; OpenStreetMap</a></small>
+        </div><div class="clearfix">
+          </div>
+      </div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+L.mapbox.accessToken = 'pk.eyJ1IjoiZWJlbmRlbm5pcyIsImEiOiJ1M2tMMC0wIn0.HL9nr43JrA_mzhGVBI_B_Q'; // Mapbox API
+var base = new Firebase('https://community-db.firebaseio.com/'); // Insert database name
+
+
+  var color = '#' + [
+        (~~(Math.random() * 16)).toString(16),
+        (~~(Math.random() * 16)).toString(16),
+        (~~(Math.random() * 16)).toString(16)].join('');
+
+  var map = L.mapbox.map('map', 'ebendennis.fb86426d', {attributionControl: false}) // Insert basemap ID
+      .setView([39.7, -104.95], 11);
+      L.control.locate().addTo(map);
+
+      var layers = document.getElementById('myNavmenu');
+
+      addLayer(L.mapbox.tileLayer('iconeng.BoulderCreek_Base'), 'Existing SFHA', 1);
+
+
+      function addLayer(layer, name, zIndex) {
+          layer
+              .setZIndex(zIndex)
+              .addTo(map);
+
+
+
+          // Create a simple layer switcher that
+          // toggles layers on and off.
+          var link = document.createElement('a');
+              link.href = '#';
+              link.className = 'active';
+              link.innerHTML = name;
+
+          link.onclick = function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+
+              if (map.hasLayer(layer)) {
+                  map.removeLayer(layer);
+                  this.className = '';
+              } else {
+                  map.addLayer(layer);
+                  this.className = 'active';
+              }
+          };
+
+          layers.appendChild(link);
+      }
+
+      function waitLayer(layer, name, zIndex) {
+          layer
+              .setZIndex(zIndex);
+
+
+
+          // Create a simple layer switcher that
+          // toggles layers on and off.
+          var link = document.createElement('a');
+              link.href = '#';
+              link.className = '';
+              link.innerHTML = name;
+
+          link.onclick = function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+
+              if (map.hasLayer(layer)) {
+                  map.removeLayer(layer);
+                  this.className = '';
+              } else {
+                  map.addLayer(layer);
+                  this.className = 'active';
+              }
+          };
+
+          layers.appendChild(link);
+      }
+
+  var featureGroup = L.featureGroup().addTo(map);
+
+  // Define circle options
+  // http://leafletjs.com/reference.html#circle
+
+
+
+  // Define polyline options
+  // http://leafletjs.com/reference.html#polyline
+ var polyline_options = {
+      color: '#000'
+  };
+
+  var grayIcon = L.icon({
+    iconUrl: 'http://a.tiles.mapbox.com/v4/marker/pin-m+aaa.png?access_token=pk.eyJ1IjoiaWNvbmVuZyIsImEiOiJQVEItMndNIn0.OGqDLfQCZhMzdgYViGKHGw',
+    iconAnchor: [14,35],
+    popupAnchor: [1,-35]
+  });
+
+  // Defining a polygon here instead of a polyline will connect the
+  // endpoints and fill the path.
+  // http://leafletjs.com/reference.html#polygon
+
+  var drawControl = new L.Control.Draw({
+    edit: {
+      featureGroup: featureGroup
+    },
+    draw: {
+      rectangle: false,
+      circle: false,
+      marker: {
+        icon: grayIcon
+      }
+    }
+  }).addTo(map);
+
+  map.on('draw:created', function(e) {
+     var type = e.layerType,
+                layer = e.layer;
+                layer.bindPopup('<fieldset><form action="http://www.chartophile.com/test/upload.php" method="post" enctype="multipart/form-data" id="uploadform" target="hideframe"><div class="col-md-12"><div class="productAttributeValue form-group" style="display:none"><input type="text" class="Field validation" id="random" name="random" value="" size="5"/></div><div class="form-group"><input type="file" accept="image/*" id="photo" name="photo"></input></div><div class="form-group"><input id="name" name="name" type="text" placeholder="Name" class="form-control"></div><div class="form-group"><textarea class="form-control" id="message" name="message" placeholder="Comment"></textarea></div><div><button id="submit" class="col3" type="submit">Add</button></div></div></form></fieldset>', {keepInView:true, closeOnClick:false});
+
+    featureGroup.addLayer(e.layer)
+    // Add a form to that marker that lets them specify a message and click Add
+    // to add the data.
+    layer.openPopup();
+  $(function(){
+   var randomnumber=Math.floor(Math.random()*10000000)
+   $('.productAttributeValue input[type="text"]').val( randomnumber );
+  });
+    L.DomEvent.addListener(L.DomUtil.get('submit'), 'click', function() {
+        // First, clean the potential-HTML they've added to the value.
+        var random = L.DomUtil.get('random').value;
+        var title = L.DomUtil.get('name').value;
+        var message = L.DomUtil.get('message').value;
+        var extension = L.DomUtil.get('photo').value.split('.').pop();;
+        var photo = L.DomUtil.get('photo').value.replace("C:\\fakepath\\","");
+        if(photo === ""){
+            var photoInput = 'blank.jpg'
+                randomInput = 'blank'
+                extensionInput = 'jpg'}
+            else{var photoInput = photo
+                     randomInput = random
+                     extensionInput = extension};
+        // Get the current draggable marker's position and GeoJSON representation
+        var geojson = layer.toGeoJSON();
+        geojson.properties['stroke'] = color;
+        geojson.properties['stroke-width'] = '3';
+        geojson.properties['fill'] = color;
+        geojson.properties['marker-color'] = color;
+        geojson.properties.random = randomInput;
+        geojson.properties.extension = extensionInput;
+        geojson.properties.title = title;
+        geojson.properties.description = message;
+        geojson.properties.picture = photoInput;
+        // And save it to Firebase
+        base.push(geojson);
+        layer.closePopup();
+        featureGroup.removeLayer(e.layer)
+    });
+});
+
+
+base.on('child_added', function(snapshot) {
+    // And for each new marker, add a featureLayer.
+    L.mapbox.featureLayer(snapshot.val())
+        .eachLayer(function(l) {
+            // And each marker should have a label with its title.
+            var geojson = l.toGeoJSON();
+            var content = '<h3>' + geojson.properties.title + '</h3>' +
+        '<div>' + geojson.properties.description + '<br \/><img src="http://chartophile.com/test/img/' + geojson.properties.random + '.' + geojson.properties.extension + '"><\/div>';
+
+
+            l.bindPopup(content, {closeButton:true, minWidth:273});
+
+        })
+        .addTo(map);
+});
+</script>
+<script src="ext/jPushMenu.js"></script>
+
+<!--call jPushMenu, required-->
+<script>
+jQuery(document).ready(function($) {
+	$('.toggle-menu').jPushMenu();
+});
+</script>
+</body>
+</html>
