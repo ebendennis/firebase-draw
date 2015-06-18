@@ -29,8 +29,8 @@
     <div class="hidden-md hidden-lg xs-legend col-sm-12">
       <b>Instructions:</b>
         <p><small>Image upload still broken in Firefox, so use another browser.</small></p>
-        <p><small>Why not write some instructions for this thing?</small></p>
-        <p><small>I'm sure you can come up with something.</small></p>
+        <p><small>Instructions go here.</small></p>
+        <p><small>And here, too.</small></p>
 
       <b>Legend:</b>
         <ul class='legend clearfix'>Legend Goes Here
@@ -67,8 +67,8 @@
         </div>
         <div class="panel-rightbody">
           <p><small>Image upload still broken in Firefox, so use another browser.</small></p>
-          <p><small>Why not write some instructions for this thing?</small></p>
-          <p><small>I'm sure you can come up with something.</small></p>
+          <p><small>Instructions go here.</small></p>
+          <p><small>And here, too.</small></p>
         </div><div class="clearfix">
           </div>
       </div>
@@ -107,7 +107,7 @@ var base = new Firebase('https://community-db.firebaseio.com/'); // Insert datab
         (~~(Math.random() * 16)).toString(16),
         (~~(Math.random() * 16)).toString(16)].join('');
 
-  var map = L.mapbox.map('map', 'ebendennis.fb86426d', {attributionControl: false}) // Insert basemap ID
+  var map = L.mapbox.map('map', 'iconeng.ld19b8nf', {attributionControl: false}) // Insert basemap ID
       .setView([39.7, -104.95], 11);
       L.control.locate().addTo(map);
 
@@ -262,6 +262,7 @@ base.on('child_added', function(snapshot) {
     L.mapbox.featureLayer(snapshot.val())
         .eachLayer(function(l) {
             // And each marker should have a label with its title.
+            var id = snapshot.name();
             var geojson = l.toGeoJSON();
             var content = '<h3>' + geojson.properties.title + '</h3>' +
         '<div>' + geojson.properties.description + '<br \/><img src="http://chartophile.com/test/img/' + geojson.properties.random + '.' + geojson.properties.extension + '"><\/div>';

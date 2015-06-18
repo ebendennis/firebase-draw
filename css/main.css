@@ -189,7 +189,7 @@ button {
 
 .panel-warning {
   border-color: #FF6B6B;
-  }    
+  }
 
 .panel-danger {
   border-color: #C44D58;
@@ -248,7 +248,7 @@ button {
   }
 
 .legend-box a {
-  color:orange;
+  color:#555;
   }
 
 .legend label,
